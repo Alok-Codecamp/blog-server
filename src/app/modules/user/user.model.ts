@@ -1,26 +1,19 @@
 import { model, Schema } from "mongoose";
-import { IUser, TName } from "./user.interface";
+import { IUser, } from "./user.interface";
+import bcrypt from 'bcrypt';
+import config from "../../config";
 
-// type for name properties of iUser interface 
-const NameSchema = new Schema<TName>({
-    firstName: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    middleName: {
-        type: String,
-        trim: true,
-    },
-    lastName: {
-        type: String,
-        required: true,
-        trim: true,
-    }
-})
+
+
+
+
+// defined user Schema
 
 const UserSchema = new Schema<IUser>({
-    name: NameSchema,
+    name: {
+        type: String,
+        required: true,
+    },
     email: {
         type: String,
         required: true,
@@ -30,7 +23,12 @@ const UserSchema = new Schema<IUser>({
         type: String,
         required: true,
     },
-    role: ["admin", "user"],
+    role: {
+        type: String,
+        enum: ["admin", "user"],
+        default: 'user'
+
+    },
     isBlocked: {
         type: Boolean,
         default: false
@@ -38,4 +36,22 @@ const UserSchema = new Schema<IUser>({
 }, { timestamps: true });
 
 
+
+UserSchema.pre('save', async function (next) {
+    console.log(this);
+
+
+    const user = this;
+
+    user.password = await bcrypt.hash(user.password, Number(config.bcrypt_salt_rounds))
+
+    next();
+})
+
+UserSchema.post('save', async function (next) {
+
+    this.password = '';
+
+
+})
 export const User = model<IUser>('User', UserSchema);

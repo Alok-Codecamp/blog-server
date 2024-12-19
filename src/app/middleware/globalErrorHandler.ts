@@ -22,7 +22,6 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
         success: false,
         message,
         errorSources,
-        main: err,
         stack: config.node_env === 'development' ? err?.stack : null
 
     })

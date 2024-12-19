@@ -1,8 +1,11 @@
 import express, { Application, Request, Response } from 'express'
 import cors from 'cors';
-import router from './app/routes/routes';
 import globalErrorHandler from './app/middleware/globalErrorHandler';
 import apiNotFound from './app/middleware/notFound';
+import { userRoutes } from './app/modules/user/user.routes';
+import router from './app/routes';
+
+
 
 
 
@@ -17,12 +20,23 @@ app.use(cors())
 
 // baseRoute
 app.get('/', (req: Request, res: Response) => {
-    res.status(200).json('project Blog running')
+    res.status(200).json(' Blog server is running')
 });
 
-// app.use('/', router);
+// application routes 
+
+
+app.use('/api', router)
+
+
+
+
 app.use(apiNotFound)
+
 app.use(globalErrorHandler)
+
+
+
 export default app;
 
 

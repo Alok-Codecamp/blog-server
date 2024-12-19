@@ -1,10 +1,5 @@
 
 // type for name properties of iUser interface 
-export type TName = {
-    firstName: string;
-    middleName?: string;
-    lastName: string;
-}
 
 export interface IUser {
     name: string;
