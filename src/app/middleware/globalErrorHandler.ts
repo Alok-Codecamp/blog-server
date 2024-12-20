@@ -4,7 +4,6 @@ import config from "../config";
 
 
 const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-    console.log(err);
 
     let statuscode = err?.statusCode || 500;
     let message = err?.message || 'unknown error';
@@ -21,7 +20,8 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
     res.status(statuscode).json({
         success: false,
         message,
-        errorSources,
+        statuscode,
+        error: errorSources,
         stack: config.node_env === 'development' ? err?.stack : null
 
     })

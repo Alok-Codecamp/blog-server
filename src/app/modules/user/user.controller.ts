@@ -13,7 +13,7 @@ const createUser = asyncWrapper(async (req, res) => {
 
     respondToClient(res, {
         success: true,
-        message: `User is created successfully`,
+        message: `Blog created successfully`,
         statusCode: httpStatus.OK,
         data: result
     })

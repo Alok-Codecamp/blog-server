@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { IUser, } from "./user.interface";
+import { IUser, UserStatics, } from "./user.interface";
 import bcrypt from 'bcrypt';
 import config from "../../config";
 
@@ -9,7 +9,7 @@ import config from "../../config";
 
 // defined user Schema
 
-const UserSchema = new Schema<IUser>({
+const UserSchema = new Schema<IUser, UserStatics>({
     name: {
         type: String,
         required: true,
@@ -51,7 +51,19 @@ UserSchema.pre('save', async function (next) {
 UserSchema.post('save', async function (next) {
 
     this.password = '';
-
+    const { ...resData } = this;
+    const transromToObj = resData as any;
+    delete transromToObj.isBlocked;
+    delete transromToObj.password;
 
 })
-export const User = model<IUser>('User', UserSchema);
+
+UserSchema.statics.isUserExistsByCustomId = async function (email: string) {
+    return await User.findOne({ email: email });
+}
+
+UserSchema.statics.isPasswordMatched = async function (plainPassword, hashedPassword) {
+    return await bcrypt.compare(plainPassword, hashedPassword);
+}
+
+export const User = model<IUser, UserStatics>('User', UserSchema);

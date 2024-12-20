@@ -20,9 +20,12 @@ const BlogSchema = new Schema<IBlog>({
         ref: 'User'
     },
     isPublished: {
-        type: Boolean
+        type: Boolean,
+        default: true
     }
 }, { timestamps: true })
+
+
 
 
 export const Blog = model<IBlog>('Blog', BlogSchema);

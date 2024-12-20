@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = __importDefault(require("../config"));
 const globalErrorHandler = (err, req, res, next) => {
-    console.log(err);
     let statuscode = (err === null || err === void 0 ? void 0 : err.statusCode) || 500;
     let message = (err === null || err === void 0 ? void 0 : err.message) || 'unknown error';
     let errorSources = [
@@ -17,8 +16,8 @@ const globalErrorHandler = (err, req, res, next) => {
     res.status(statuscode).json({
         success: false,
         message,
-        errorSources,
-        main: err,
+        statuscode,
+        error: errorSources,
         stack: config_1.default.node_env === 'development' ? err === null || err === void 0 ? void 0 : err.stack : null
     });
 };

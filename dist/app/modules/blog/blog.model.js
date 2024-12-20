@@ -18,7 +18,8 @@ const BlogSchema = new mongoose_1.Schema({
         ref: 'User'
     },
     isPublished: {
-        type: Boolean
+        type: Boolean,
+        default: true
     }
 }, { timestamps: true });
 exports.Blog = (0, mongoose_1.model)('Blog', BlogSchema);
