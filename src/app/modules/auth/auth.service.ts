@@ -27,7 +27,7 @@ const loginUser = async (payload: ILoginUser) => {
     const isPasswordMatched = await User.isPasswordMatched(payload.password, isUserExists.password)
 
     if (!isPasswordMatched) {
-        throw new ApiError(httpStatus.FORBIDDEN, `user password doesn't match !`)
+        throw new ApiError(httpStatus.UNAUTHORIZED, `"Invalid credentials!`)
     }
 
     // ASSCESS granged: send accessToken, refreshToken

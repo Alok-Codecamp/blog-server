@@ -7,14 +7,21 @@ import { searchingFields } from "./blog.constant";
 import { IBlog } from "./blog.interface";
 import { Blog } from "./blog.model";
 import httpStatus from "http-status";
+import { ObjectId } from "mongoose";
 
 
-const createBlogIntoDb = async (payload: IBlog) => {
+const createBlogIntoDb = async (payload: IBlog, email: string) => {
+
+    const requestedAuthor = await User.findOne({ email })
+
+    if (requestedAuthor) {
+        payload.author = requestedAuthor?._id
+    };
 
     const isAuthorExists = await User.findOne({ _id: payload.author })
 
     if (!isAuthorExists) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Author not found!')
+        throw new ApiError(404, 'Author not found!')
     }
 
     const newBlog = await Blog.create(payload);
@@ -32,7 +39,7 @@ const createBlogIntoDb = async (payload: IBlog) => {
 const getAllBlogFromDb = async (query: Record<string, unknown>) => {
     console.log(query);
 
-    const blogQuery = new FlexibleQueryBuilder(Blog.find().populate({ path: 'author', select: '_id name email' }).select('title content author createdAt'), query).search(searchingFields).sort().filter();
+    const blogQuery = new FlexibleQueryBuilder(Blog.find({ isPublished: true }).populate({ path: 'author', select: '_id name email' }).select('title content author createdAt'), query).search(searchingFields).sort().filter();
 
     const allBlog = await blogQuery.queryModel;
 

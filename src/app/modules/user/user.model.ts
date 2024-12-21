@@ -37,9 +37,8 @@ const UserSchema = new Schema<IUser, UserStatics>({
 
 
 
+// password hashed 
 UserSchema.pre('save', async function (next) {
-    console.log(this);
-
 
     const user = this;
 
@@ -48,10 +47,12 @@ UserSchema.pre('save', async function (next) {
     next();
 })
 
-
+// statics method for check user 
 UserSchema.statics.isUserExistsByCustomId = async function (email: string) {
     return await User.findOne({ email: email });
 }
+
+// static method for match password 
 
 UserSchema.statics.isPasswordMatched = async function (plainPassword, hashedPassword) {
     return await bcrypt.compare(plainPassword, hashedPassword);

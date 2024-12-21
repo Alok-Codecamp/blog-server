@@ -18,7 +18,6 @@ const respondToClient_1 = __importDefault(require("../../utils/respondToClient")
 const user_service_1 = require("./user.service");
 const http_status_1 = __importDefault(require("http-status"));
 const createUser = (0, asyncWrapper_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
     const result = yield user_service_1.userServices.createUserIntoDb(req.body);
     (0, respondToClient_1.default)(res, {
         success: true,

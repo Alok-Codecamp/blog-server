@@ -33,7 +33,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     // // checking if the password is inCorrect
     const isPasswordMatched = yield user_model_1.User.isPasswordMatched(payload.password, isUserExists.password);
     if (!isPasswordMatched) {
-        throw new error_superClass_1.default(http_status_1.default.FORBIDDEN, `user password doesn't match !`);
+        throw new error_superClass_1.default(http_status_1.default.UNAUTHORIZED, `"Invalid credentials!`);
     }
     // ASSCESS granged: send accessToken, refreshToken
     const jwtPayload = {

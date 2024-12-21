@@ -41,19 +41,21 @@ const UserSchema = new mongoose_1.Schema({
         default: false
     }
 }, { timestamps: true, versionKey: false });
+// password hashed 
 UserSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(this);
         const user = this;
         user.password = yield bcrypt_1.default.hash(user.password, Number(config_1.default.bcrypt_salt_rounds));
         next();
     });
 });
+// statics method for check user 
 UserSchema.statics.isUserExistsByCustomId = function (email) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield exports.User.findOne({ email: email });
     });
 };
+// static method for match password 
 UserSchema.statics.isPasswordMatched = function (plainPassword, hashedPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield bcrypt_1.default.compare(plainPassword, hashedPassword);

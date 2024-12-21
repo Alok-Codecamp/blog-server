@@ -10,16 +10,21 @@ const BlogSchema = new mongoose_1.Schema({
     content: {
         type: String,
         required: true,
-        min: 10,
+        min: 1,
         max: 1000
     },
     author: {
         type: mongoose_1.Schema.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     },
     isPublished: {
         type: Boolean,
         default: true
     }
 }, { timestamps: true });
+// BlogSchema.post('find', async function (next) {
+//     const PublishedBlogs = await Blog.find({ isPublished: true });
+//     next()
+// })
 exports.Blog = (0, mongoose_1.model)('Blog', BlogSchema);

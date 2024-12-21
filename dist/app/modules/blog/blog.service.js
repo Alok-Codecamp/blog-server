@@ -19,10 +19,15 @@ const user_model_1 = require("../user/user.model");
 const blog_constant_1 = require("./blog.constant");
 const blog_model_1 = require("./blog.model");
 const http_status_1 = __importDefault(require("http-status"));
-const createBlogIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const createBlogIntoDb = (payload, email) => __awaiter(void 0, void 0, void 0, function* () {
+    const requestedAuthor = yield user_model_1.User.findOne({ email });
+    if (requestedAuthor) {
+        payload.author = requestedAuthor === null || requestedAuthor === void 0 ? void 0 : requestedAuthor._id;
+    }
+    ;
     const isAuthorExists = yield user_model_1.User.findOne({ _id: payload.author });
     if (!isAuthorExists) {
-        throw new error_superClass_1.default(http_status_1.default.NOT_FOUND, 'Author not found!');
+        throw new error_superClass_1.default(404, 'Author not found!');
     }
     const newBlog = yield blog_model_1.Blog.create(payload);
     if (!newBlog) {
@@ -33,7 +38,7 @@ const createBlogIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function
 // service function for get all Blog from db
 const getAllBlogFromDb = (query) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(query);
-    const blogQuery = new FlexibleQueryBuilder_1.default(blog_model_1.Blog.find().populate({ path: 'author', select: '_id name email' }).select('title content author createdAt'), query).search(blog_constant_1.searchingFields).sort().filter();
+    const blogQuery = new FlexibleQueryBuilder_1.default(blog_model_1.Blog.find({ isPublished: true }).populate({ path: 'author', select: '_id name email' }).select('title content author createdAt'), query).search(blog_constant_1.searchingFields).sort().filter();
     const allBlog = yield blogQuery.queryModel;
     if (!allBlog) {
         throw new Error(`Faild to retrive blogs`);

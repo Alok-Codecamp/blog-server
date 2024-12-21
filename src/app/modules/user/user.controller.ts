@@ -7,7 +7,6 @@ import httpStatus from "http-status";
 
 
 const createUser = asyncWrapper(async (req, res) => {
-    console.log(req.body);
 
     const result = await userServices.createUserIntoDb(req.body);
 

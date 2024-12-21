@@ -12,12 +12,13 @@ const BlogSchema = new Schema<IBlog>({
     content: {
         type: String,
         required: true,
-        min: 10,
+        min: 1,
         max: 1000
     },
     author: {
         type: Schema.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     },
     isPublished: {
         type: Boolean,
@@ -25,7 +26,11 @@ const BlogSchema = new Schema<IBlog>({
     }
 }, { timestamps: true })
 
+// BlogSchema.post('find', async function (next) {
+//     const PublishedBlogs = await Blog.find({ isPublished: true });
 
+//     next()
+// })
 
 
 export const Blog = model<IBlog>('Blog', BlogSchema);

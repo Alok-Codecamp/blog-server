@@ -19,12 +19,17 @@ const respondToClient_1 = __importDefault(require("../../utils/respondToClient")
 const http_status_1 = __importDefault(require("http-status"));
 // controller function for create blog,
 const createBlog = (0, asyncWrapper_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield blog_service_1.blogServices.createBlogIntoDb(req.body);
+    const result = yield blog_service_1.blogServices.createBlogIntoDb(req.body, req.user.email);
     (0, respondToClient_1.default)(res, {
         success: true,
         message: `Blog created successfully`,
         statusCode: http_status_1.default.OK,
-        data: result
+        data: {
+            _id: result._id,
+            title: result.title,
+            content: result.content,
+            author: result.author
+        }
     });
 }));
 //controller function get all blogs

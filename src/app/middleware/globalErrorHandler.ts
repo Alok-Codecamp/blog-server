@@ -21,6 +21,8 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
         }
     ]
     if (err instanceof ZodError) {
+        console.log(err);
+
         const commonErrorFormat = handleZodError(err);
         statusCode = commonErrorFormat?.statusCode;
         message = commonErrorFormat?.message;
@@ -59,7 +61,7 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
         message = err.message;
         errorSources = [
             {
-                path: 'App error ',
+                path: 'Api error ',
                 message: err.message
             }
         ]
@@ -79,6 +81,9 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
 
     }
 
+    if (!statusCode) {
+        statusCode = 500;
+    }
 
     res.status(statusCode).json({
         success: false,

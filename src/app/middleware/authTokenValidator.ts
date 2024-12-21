@@ -3,7 +3,7 @@ import { TUserRole } from "../modules/user/user.interface"
 import { NextFunction, Request, Response } from "express"
 import asyncWrapper from "../utils/asyncWrapper"
 import ApiError from "./error.superClass"
-import httpStatus = require("http-status")
+import httpStatus from "http-status"
 import config from "../config"
 
 
@@ -16,13 +16,13 @@ export const authTokenValidator = (...requiredRoles: TUserRole[]) => {
 
         // if the token send from the client
         if (!token) {
-            throw new ApiError(httpStatus.NOT_ACCEPTABLE, 'Unauthorized user!')
+            throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized user!')
         }
 
         // check if the token is valied
         jwt.verify(token, config.jwt_private_key as string, function (err, decoded) {
             if (err) {
-                throw new ApiError(httpStatus.NOT_ACCEPTABLE, 'Unauthorized user!')
+                throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized user!')
             }
 
             const { email, role } = decoded as JwtPayload;
@@ -30,7 +30,7 @@ export const authTokenValidator = (...requiredRoles: TUserRole[]) => {
             console.log(`payload:${role} and route:${requiredRoles}`);
 
             if (requiredRoles && !requiredRoles.includes(role)) {
-                throw new ApiError(httpStatus.NOT_ACCEPTABLE, 'Unauthorized user!')
+                throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized user!')
             }
 
 

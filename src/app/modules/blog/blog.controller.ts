@@ -7,13 +7,18 @@ import httpStatus from "http-status";
 // controller function for create blog,
 const createBlog = asyncWrapper(async (req: Request, res: Response) => {
 
-    const result = await blogServices.createBlogIntoDb(req.body);
+    const result = await blogServices.createBlogIntoDb(req.body, req.user.email);
 
     respondToClient(res, {
         success: true,
         message: `Blog created successfully`,
         statusCode: httpStatus.OK,
-        data: result
+        data: {
+            _id: result._id,
+            title: result.title,
+            content: result.content,
+            author: result.author
+        }
     })
 })
 

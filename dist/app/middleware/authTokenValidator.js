@@ -16,24 +16,24 @@ exports.authTokenValidator = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const asyncWrapper_1 = __importDefault(require("../utils/asyncWrapper"));
 const error_superClass_1 = __importDefault(require("./error.superClass"));
-const httpStatus = require("http-status");
+const http_status_1 = __importDefault(require("http-status"));
 const config_1 = __importDefault(require("../config"));
 const authTokenValidator = (...requiredRoles) => {
     return (0, asyncWrapper_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         const token = req.headers.authorization;
         // if the token send from the client
         if (!token) {
-            throw new error_superClass_1.default(httpStatus.NOT_ACCEPTABLE, 'Unauthorized user!');
+            throw new error_superClass_1.default(http_status_1.default.UNAUTHORIZED, 'Unauthorized user!');
         }
         // check if the token is valied
         jsonwebtoken_1.default.verify(token, config_1.default.jwt_private_key, function (err, decoded) {
             if (err) {
-                throw new error_superClass_1.default(httpStatus.NOT_ACCEPTABLE, 'Unauthorized user!');
+                throw new error_superClass_1.default(http_status_1.default.UNAUTHORIZED, 'Unauthorized user!');
             }
             const { email, role } = decoded;
             console.log(`payload:${role} and route:${requiredRoles}`);
             if (requiredRoles && !requiredRoles.includes(role)) {
-                throw new error_superClass_1.default(httpStatus.NOT_ACCEPTABLE, 'Unauthorized user!');
+                throw new error_superClass_1.default(http_status_1.default.UNAUTHORIZED, 'Unauthorized user!');
             }
             req.user = decoded;
             next();
