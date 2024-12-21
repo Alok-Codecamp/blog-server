@@ -8,6 +8,10 @@ const createUserIntoDb = async (payload: IUser) => {
     if (payload.role === 'admin') {
         throw new ApiError(httpStatus.NOT_ACCEPTABLE, 'admin Can not be create')
     }
+    const isUserExists = await User.isUserExistsByCustomId(payload.email);
+    if (isUserExists) {
+        throw new ApiError(httpStatus.NOT_ACCEPTABLE, 'User already registered. Please log in or use a different email to sign up.')
+    }
 
     const newUser = (await User.create(payload));
     // console.log(newUser);

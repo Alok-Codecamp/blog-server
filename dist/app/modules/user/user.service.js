@@ -20,6 +20,10 @@ const createUserIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function
     if (payload.role === 'admin') {
         throw new error_superClass_1.default(http_status_1.default.NOT_ACCEPTABLE, 'admin Can not be create');
     }
+    const isUserExists = yield user_model_1.User.isUserExistsByCustomId(payload.email);
+    if (isUserExists) {
+        throw new error_superClass_1.default(http_status_1.default.NOT_ACCEPTABLE, 'User already registered. Please log in or use a different email to sign up.');
+    }
     const newUser = (yield user_model_1.User.create(payload));
     // console.log(newUser);
     return newUser;
