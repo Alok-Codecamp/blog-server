@@ -32,11 +32,11 @@ const loginUser = async (payload: ILoginUser) => {
 
     // ASSCESS granged: send accessToken, refreshToken
     const jwtPayload = {
-        eamil: isUserExists.email,
+        email: isUserExists.email,
         role: isUserExists.role
     }
     const accessToken = jwt.sign(jwtPayload, config.jwt_private_key as string, {
-        expiresIn: '1h',
+        expiresIn: '1d',
     })
 
     return {

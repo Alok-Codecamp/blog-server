@@ -37,11 +37,11 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     }
     // ASSCESS granged: send accessToken, refreshToken
     const jwtPayload = {
-        eamil: isUserExists.email,
+        email: isUserExists.email,
         role: isUserExists.role
     };
     const accessToken = jsonwebtoken_1.default.sign(jwtPayload, config_1.default.jwt_private_key, {
-        expiresIn: '1h',
+        expiresIn: '1d',
     });
     return {
         accessToken,

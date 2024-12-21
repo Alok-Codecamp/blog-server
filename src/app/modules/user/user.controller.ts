@@ -13,17 +13,33 @@ const createUser = asyncWrapper(async (req, res) => {
 
     respondToClient(res, {
         success: true,
-        message: `Blog created successfully`,
+        message: ` User registerd successfull`,
         statusCode: httpStatus.OK,
-        data: result
+        data: {
+            _id: result._id,
+            name: result.name,
+            email: result.email
+        }
     })
 
 
 })
 
 
+const blockedUser = asyncWrapper(async (req, res) => {
+
+    const result = await userServices.blockUserIntoDb(req.params.userId)
+
+    respondToClient(res, {
+        success: true,
+        message: ` User blocked successfull`,
+        statusCode: httpStatus.OK,
+    })
+})
+
 
 
 export const userController = {
     createUser,
+    blockedUser
 }

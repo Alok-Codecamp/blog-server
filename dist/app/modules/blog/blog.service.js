@@ -14,9 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogServices = void 0;
 const FlexibleQueryBuilder_1 = __importDefault(require("../../builder/FlexibleQueryBuilder "));
+const error_superClass_1 = __importDefault(require("../../middleware/error.superClass"));
+const user_model_1 = require("../user/user.model");
 const blog_constant_1 = require("./blog.constant");
 const blog_model_1 = require("./blog.model");
+const http_status_1 = __importDefault(require("http-status"));
 const createBlogIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isAuthorExists = yield user_model_1.User.findOne({ _id: payload.author });
+    if (!isAuthorExists) {
+        throw new error_superClass_1.default(http_status_1.default.NOT_FOUND, 'Author not found!');
+    }
     const newBlog = yield blog_model_1.Blog.create(payload);
     if (!newBlog) {
         throw new Error(`Faild to create blog`);
@@ -34,7 +41,18 @@ const getAllBlogFromDb = (query) => __awaiter(void 0, void 0, void 0, function* 
     return allBlog;
 });
 // service function for update blog 
-const updateBlogIntoDb = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+const updateBlogIntoDb = (id, payload, email) => __awaiter(void 0, void 0, void 0, function* () {
+    const isBlogExists = yield blog_model_1.Blog.findById(id);
+    if (!isBlogExists) {
+        throw new error_superClass_1.default(http_status_1.default.NOT_FOUND, 'Blog not found!');
+    }
+    const blogOwner = yield user_model_1.User.findById(isBlogExists.author);
+    if (!blogOwner) {
+        throw new error_superClass_1.default(http_status_1.default.NOT_FOUND, 'Author not found!');
+    }
+    if (email && blogOwner.email !== email) {
+        throw new error_superClass_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized for modify this blog!');
+    }
     const updatedBlog = yield blog_model_1.Blog.findByIdAndUpdate(id, payload, { new: true }).populate({
         path: 'author',
         select: '_id name email'
@@ -46,13 +64,45 @@ const updateBlogIntoDb = (id, payload) => __awaiter(void 0, void 0, void 0, func
     return updatedBlog;
 });
 // service function for delete blog 
-const deleteBlogfromDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const deletedBlog = yield blog_model_1.Blog.findByIdAndDelete(id);
+const deleteBlogfromDb = (id, email) => __awaiter(void 0, void 0, void 0, function* () {
+    const isBlogExists = yield blog_model_1.Blog.findById(id);
+    if (!isBlogExists) {
+        throw new error_superClass_1.default(http_status_1.default.NOT_FOUND, 'Blog not found!');
+    }
+    const blogOwner = yield user_model_1.User.findById(isBlogExists.author);
+    if (!blogOwner) {
+        throw new error_superClass_1.default(http_status_1.default.NOT_FOUND, 'You are not owner of this blog!');
+    }
+    if (email && blogOwner.email !== email) {
+        throw new error_superClass_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized to delete this blog!');
+    }
+    const deletedBlog = yield blog_model_1.Blog.findByIdAndDelete(id).populate({
+        path: 'author',
+        select: '_id name email'
+    });
+    if (!deletedBlog) {
+        throw new Error(`Faild to delete blog`);
+    }
+    return deletedBlog;
+});
+const deleteBlogByAdminFromDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const isBlogExists = yield blog_model_1.Blog.findById(id);
+    if (!isBlogExists) {
+        throw new error_superClass_1.default(http_status_1.default.NOT_FOUND, 'Blog not found!');
+    }
+    const deletedBlog = yield blog_model_1.Blog.findByIdAndDelete(id).populate({
+        path: 'author',
+        select: '_id name email'
+    });
+    if (!deletedBlog) {
+        throw new Error(`Faild to delete blog`);
+    }
     return deletedBlog;
 });
 exports.blogServices = {
     createBlogIntoDb,
     updateBlogIntoDb,
     deleteBlogfromDb,
-    getAllBlogFromDb
+    getAllBlogFromDb,
+    deleteBlogByAdminFromDb
 };

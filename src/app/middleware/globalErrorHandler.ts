@@ -1,11 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import { TErrorSources } from "../interface/error";
 import config from "../config";
+import { ZodError } from "zod";
+import ApiError from "./error.superClass";
+import handleZodError from "../error/zodError";
+import handleMongooseValidationError from "../error/mongooseValidationError";
+import handleCastError from "../error/castError";
+import handleDuplicateError from "../error/duplicateError";
 
 
 const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
 
-    let statuscode = err?.statusCode || 500;
+    let statusCode = err?.statusCode || 500;
     let message = err?.message || 'unknown error';
 
     let errorSources: TErrorSources = [
@@ -14,13 +20,70 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
             message: message || 'unknown erorr'
         }
     ]
+    if (err instanceof ZodError) {
+        const commonErrorFormat = handleZodError(err);
+        statusCode = commonErrorFormat?.statusCode;
+        message = commonErrorFormat?.message;
+        errorSources = commonErrorFormat?.errorSources;
+    } else if (err.name === 'ValidationError') {
+
+        const commonErrorFormat = handleMongooseValidationError(err);
+
+        statusCode = commonErrorFormat?.statusCode;
+        message = commonErrorFormat?.message;
+        errorSources = commonErrorFormat?.errorSources;
+
+    } else if (err.name === "CastError") {
+
+        const commonErrorFormat = handleCastError(err);
+
+        statusCode = commonErrorFormat?.statusCode;
+        message = commonErrorFormat?.message;
+        errorSources = commonErrorFormat?.errorSources;
+
+    } else if (err.code === 11000) {
+        console.log('log from duplicate id error ', err.code);
+
+        const commonErrorFormat = handleDuplicateError(err);
+
+        statusCode = commonErrorFormat?.statusCode;
+        message = commonErrorFormat?.message;
+        errorSources = commonErrorFormat?.errorSources;
+
+    }
+
+    // handle AppError
+
+    else if (err instanceof ApiError) {
+        statusCode = err?.statusCode;
+        message = err.message;
+        errorSources = [
+            {
+                path: 'App error ',
+                message: err.message
+            }
+        ]
+
+    }
+
+    // handler for error
+
+    else if (err instanceof Error) {
+        message = err.message;
+        errorSources = [
+            {
+                path: 'error ',
+                message: err.message
+            }
+        ]
+
+    }
 
 
-
-    res.status(statuscode).json({
+    res.status(statusCode).json({
         success: false,
         message,
-        statuscode,
+        statusCode,
         error: errorSources,
         stack: config.node_env === 'development' ? err?.stack : null
 

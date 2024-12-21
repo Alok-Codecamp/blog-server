@@ -22,11 +22,24 @@ const createUser = (0, asyncWrapper_1.default)((req, res) => __awaiter(void 0, v
     const result = yield user_service_1.userServices.createUserIntoDb(req.body);
     (0, respondToClient_1.default)(res, {
         success: true,
-        message: `Blog created successfully`,
+        message: ` User registerd successfull`,
         statusCode: http_status_1.default.OK,
-        data: result
+        data: {
+            _id: result._id,
+            name: result.name,
+            email: result.email
+        }
+    });
+}));
+const blockedUser = (0, asyncWrapper_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.userServices.blockUserIntoDb(req.params.userId);
+    (0, respondToClient_1.default)(res, {
+        success: true,
+        message: ` User blocked successfull`,
+        statusCode: http_status_1.default.OK,
     });
 }));
 exports.userController = {
     createUser,
+    blockedUser
 };

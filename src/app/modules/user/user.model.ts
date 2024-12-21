@@ -33,7 +33,7 @@ const UserSchema = new Schema<IUser, UserStatics>({
         type: Boolean,
         default: false
     }
-}, { timestamps: true });
+}, { timestamps: true, versionKey: false });
 
 
 
@@ -48,15 +48,6 @@ UserSchema.pre('save', async function (next) {
     next();
 })
 
-UserSchema.post('save', async function (next) {
-
-    this.password = '';
-    const { ...resData } = this;
-    const transromToObj = resData as any;
-    delete transromToObj.isBlocked;
-    delete transromToObj.password;
-
-})
 
 UserSchema.statics.isUserExistsByCustomId = async function (email: string) {
     return await User.findOne({ email: email });
