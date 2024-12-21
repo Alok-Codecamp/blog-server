@@ -15,7 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.userServices = void 0;
 const error_superClass_1 = __importDefault(require("../../middleware/error.superClass"));
 const user_model_1 = require("./user.model");
+const http_status_1 = __importDefault(require("http-status"));
 const createUserIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    if (payload.role === 'admin') {
+        throw new error_superClass_1.default(http_status_1.default.NOT_ACCEPTABLE, 'admin Can not be create');
+    }
     const newUser = (yield user_model_1.User.create(payload));
     // console.log(newUser);
     return newUser;
@@ -23,11 +27,11 @@ const createUserIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function
 const blockUserIntoDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const isUserExists = yield user_model_1.User.findById(id);
     if (!isUserExists) {
-        throw new error_superClass_1.default(httpStatus.NOT_FOUND, 'User not found!');
+        throw new error_superClass_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
     }
     const blockedUser = yield user_model_1.User.findByIdAndUpdate(id, { isBlocked: true }, { new: true });
     if (!blockedUser) {
-        throw new error_superClass_1.default(httpStatus.FORBIDDEN, 'faild to block user!');
+        throw new error_superClass_1.default(http_status_1.default.FORBIDDEN, 'faild to block user!');
     }
     return blockedUser;
 });

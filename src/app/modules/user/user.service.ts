@@ -1,12 +1,13 @@
 import ApiError from "../../middleware/error.superClass";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
-
-
+import httpStatus from "http-status";
 
 const createUserIntoDb = async (payload: IUser) => {
 
-
+    if (payload.role === 'admin') {
+        throw new ApiError(httpStatus.NOT_ACCEPTABLE, 'admin Can not be create')
+    }
 
     const newUser = (await User.create(payload));
     // console.log(newUser);
